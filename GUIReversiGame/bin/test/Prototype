@@ -1,0 +1,332 @@
+最初に作成した、GUIothelloGame
+既に存在しないメソッドを使用している個所もあるが、
+念のため残してある。
+GUIではない「othelloGame」プロジェクト内に残っている可能性はある。
+
+package test;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+
+import operation.Calculate;
+import operation.DataProcessing;
+import tableValue.TableInt;
+
+public class Test implements ActionListener{
+	
+	//operationパッケージのインスタント
+	DataProcessing process;
+	Calculate calculate;
+	
+	//ゲーム上の値
+	int[][] tableInt;
+	int turnCount;
+	int turnCountAmount;
+//	String inputCmd;
+	int[] resultInt;
+	int inputableInt;
+	int playMode;
+	String cmd;
+	String selectedPlace;
+	
+	//titleFrameの値
+	JFrame frameTitle;
+	
+	//playFrameの値
+	JFrame framePlay;
+	JPanel panelPlay1;
+	JPanel panelPlay2;
+	JPanel panelPlay3;
+	JLabel labelPlay2;
+	JLabel labelPlay3;
+	GridLayout layoutPlay;
+	ImageIcon iconPlay1;
+	ImageIcon iconPlay2;
+	final String[] columnNames = {"a", "b", "c", "d", "e", "f", "g", "h"};
+	
+	
+	public static void main(String[] args) {
+
+		new Test("～オセロゲーム～");
+		
+	}
+	
+	//title(Main)メソッドやplayメソッドは外部化してインスタンスとして表したい。mainクラスが長すぎる
+	public Test(String title) {
+		TableInt tableIntInstance = new TableInt();
+		tableInt = tableIntInstance.getTableInt();
+		process = new DataProcessing();
+		turnCount = 1;
+		turnCountAmount = 60;
+		calculate = new Calculate();
+		resultInt = new int[3];
+		inputableInt = 0;
+		
+		playMode = 0;
+		
+		frameTitle = new JFrame();
+		frameTitle.setTitle(title);
+		frameTitle.setSize(500, 600);
+		frameTitle.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frameTitle.setLocationRelativeTo(null);
+		
+		Container contentPane = frameTitle.getContentPane();
+		contentPane.setBackground(Color.GRAY);
+		
+		JPanel panelTitle1 = new JPanel();
+			JLabel labelTitle1 = new JLabel("～オセロゲーム～");
+				labelTitle1.setForeground(Color.BLACK);
+				labelTitle1.setFont(new Font("ＭＳ ゴシック", Font.ITALIC, 40));
+				labelTitle1.setHorizontalAlignment(JLabel.CENTER);
+			panelTitle1.add(labelTitle1, BorderLayout.NORTH);
+			frameTitle.getContentPane().add(panelTitle1, BorderLayout.NORTH);
+	
+		JPanel panelTitle2 = new JPanel(new BorderLayout());
+			panelTitle2.setPreferredSize(new Dimension(150, 100));
+			panelTitle2.setBackground(Color.GREEN);
+	
+			JLabel labelTitle2 = new JLabel();
+				ImageIcon iconTitle = new ImageIcon("C:\\Users\\am\\Documents\\workspace\\GUIothelloGame\\src\\frame\\img\\othello_game.png");
+				labelTitle2.setIcon(iconTitle);
+				labelTitle2.setHorizontalAlignment(JLabel.CENTER);
+			panelTitle2.add(labelTitle2, BorderLayout.CENTER);
+			frameTitle.getContentPane().add(panelTitle2, BorderLayout.CENTER);
+	
+		JPanel panelTitle3 = new JPanel();
+			panelTitle3.setPreferredSize(new Dimension(200, 100));
+			
+			JButton btnTitle1 = new JButton("2人で対戦");
+				btnTitle1.setActionCommand("2player");
+				btnTitle1.addActionListener(this);
+			
+			JButton btnTitle2 = new JButton("CPUと対戦");
+				btnTitle2.setActionCommand("vsCpu");
+				btnTitle2.addActionListener(this);
+			
+			panelTitle3.add(btnTitle1);
+			panelTitle3.add(btnTitle2);
+			frameTitle.getContentPane().add(panelTitle3, BorderLayout.SOUTH);
+			
+		frameTitle.setVisible(true);
+		
+		
+//		panelPlay1 = new JPanel();
+//		panelPlay1.setBackground(Color.BLUE);
+//		framePlay.getContentPane().add(panelPlay1, BorderLayout.NORTH);
+		
+		
+		layoutPlay = new GridLayout();
+		layoutPlay.setRows(8);
+		layoutPlay.setColumns(8);
+		
+		iconPlay1 = new ImageIcon("C:\\Users\\am\\Documents\\workspace\\GUIothelloGame\\src\\frame\\img\\othello_ishi_black.png");
+		iconPlay2 = new ImageIcon("C:\\Users\\am\\Documents\\workspace\\GUIothelloGame\\src\\frame\\img\\othello_ishi_white.png");
+		
+		framePlay = new JFrame();
+		framePlay.setSize(500, 600);
+		framePlay.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		framePlay.setLocationRelativeTo(null);
+		
+//		panelPlay1.setBackground(Color.BLUE);
+		GridLayout layoutPlay2 = new GridLayout();
+		layoutPlay2.setRows(1);
+		layoutPlay2.setColumns(10);
+		
+		panelPlay1 = new JPanel();
+		panelPlay1.setLayout(layoutPlay2);
+		for(int i = 0; i < 8; i++) {
+			JLabel labelPlay1 = new JLabel(columnNames[i]);
+			labelPlay1.setHorizontalAlignment(JLabel.CENTER);
+			panelPlay1.add(labelPlay1);
+		}
+		framePlay.getContentPane().add(panelPlay1, BorderLayout.NORTH);
+	}
+
+	public void playGame() {
+		
+		
+		JPanel panelPlay4 = new JPanel();
+		GridLayout layoutPlay3 = new GridLayout();
+		layoutPlay3.setRows(8);
+		layoutPlay3.setColumns(1);
+		panelPlay4.setLayout(layoutPlay3);
+		for(int i = 0; i < 8; i++) {
+			JLabel labelPlay1 = new JLabel(Integer.toString(i + 1));
+			labelPlay1.setHorizontalAlignment(JLabel.CENTER);
+			panelPlay4.add(labelPlay1);
+		}
+		framePlay.getContentPane().add(panelPlay4, BorderLayout.WEST);
+		
+		JPanel panelPlay5 = new JPanel();
+		framePlay.getContentPane().add(panelPlay5, BorderLayout.EAST);
+		
+//		panelPlay2.setVisible(false);
+		if(panelPlay2 != null) {
+			framePlay.remove(panelPlay2);
+		}
+		
+		panelPlay2 = new JPanel();
+		panelPlay2.setLayout(layoutPlay);
+		panelPlay2.setPreferredSize(new Dimension(150, 100));
+		panelPlay2.setBackground(Color.GREEN);
+		panelPlay2.setBorder(new LineBorder(Color.BLACK, 2, true));
+			
+		tableInt = process.combineTableIntToInputablePlaceInt(tableInt, turnCount);
+		
+		for(int i = 0; i < tableInt.length; i++) {
+			for(int j = 0; j < tableInt[0].length; j++) {
+				
+				labelPlay2 = new JLabel();
+				labelPlay2.setBorder(new LineBorder(Color.BLACK, 2, true));
+				labelPlay2.setHorizontalAlignment(JLabel.CENTER);
+//				labelPlay2.setBackground(Color.GREEN);
+				if(tableInt[i][j] == 0) {
+					labelPlay2.setText("");
+					panelPlay2.add(labelPlay2);
+				} else if(tableInt[i][j] == 2) {
+					labelPlay2.setIcon(iconPlay1);
+					panelPlay2.add(labelPlay2);
+				} else if(tableInt[i][j] == 4) {
+					labelPlay2.setIcon(iconPlay2);
+					panelPlay2.add(labelPlay2);
+				} else if(tableInt[i][j] == 7) {
+					JButton btnPlay1 = new JButton();
+					btnPlay1.setActionCommand(Integer.toString(i) + Integer.toString(j));
+					btnPlay1.setHorizontalAlignment(JButton.RIGHT);
+					btnPlay1.addActionListener(this);
+					panelPlay2.add(btnPlay1);
+				}
+			}
+		}
+		
+		tableInt = process.refreshTableInt(tableInt);
+		
+		framePlay.getContentPane().add(panelPlay2, BorderLayout.CENTER);
+	
+		panelPlay3 = new JPanel();
+		panelPlay3.setBackground(Color.GRAY);
+		panelPlay3.setPreferredSize(new Dimension(200, 200));
+		
+		if(turnCount > 1) {
+			if(turnCount <= turnCountAmount) {
+				resultInt = calculate.checkTurnResult(tableInt);
+				if(resultInt[0] == 0) {
+					inputableInt = process.checkInputable(tableInt, turnCount);
+					if(inputableInt == 2) {
+						turnCount++;
+						turnCountAmount++;
+//					continue;
+					} else {
+						if(inputableInt == 1) {
+							labelPlay3 = new JLabel();
+							selectedPlace = process.convertStringToString(cmd);
+							labelPlay3.setText(selectedPlace + "が選択されました。");
+							panelPlay3.add(labelPlay3);
+						}
+						JLabel labelPlay4 = new JLabel();
+						if(turnCount % 2 == 1) {
+							labelPlay4.setText("黒丸の先行プレイヤーは、石を置く場所をクリックしてください。");
+						} else if(turnCount % 2 == 0) {
+							labelPlay4.setText("白丸の後攻プレイヤーは、石を置く場所をクリックしてください。");
+						}	
+						panelPlay3.add(labelPlay4);
+					} 
+//					output.result(tableInt, resultInt);
+//					break;
+				} else {
+					labelPlay3 = new JLabel();
+					selectedPlace = process.convertStringToString(cmd);
+					labelPlay3.setText(selectedPlace + "が選択されました。");
+					panelPlay3.add(labelPlay3);
+					JLabel labelPlay4 = new JLabel();
+					if(resultInt[0] == 1) {
+						labelPlay4.setText(resultInt[1] + "対" + resultInt[2] + "で、黒丸の先行プレイヤーの勝利です！");
+					} else if(resultInt[0] == 2) {
+						labelPlay4.setText(resultInt[2] + "対" + resultInt[1] + "で、白丸の後行プレイヤーの勝利です！");
+					}
+					panelPlay3.add(labelPlay4);
+					JLabel labelPlay5 = new JLabel();
+					labelPlay5.setText("ゲームを終了します");
+					panelPlay3.add(labelPlay5);
+					
+					JButton btnPlay2 = new JButton("タイトルに戻る");
+					btnPlay2.setActionCommand("toTitle");
+					btnPlay2.addActionListener(this);
+					panelPlay3.add(btnPlay2);
+				}
+			} else {
+				resultInt = calculate.checkGameResult(tableInt);
+				labelPlay3 = new JLabel();
+				selectedPlace = process.convertStringToString(cmd);
+				labelPlay3.setText(selectedPlace + "が選択されました。");
+				panelPlay3.add(labelPlay3);
+				JLabel labelPlay4 = new JLabel();
+				if(resultInt[0] == 1) {
+					labelPlay4.setText(resultInt[1] + "対" + resultInt[2] + "で、黒丸の先行プレイヤーの勝利です！");
+				} else if(resultInt[0] == 2) {
+					labelPlay4.setText(resultInt[2] + "対" + resultInt[1] + "で、白丸の後行プレイヤーの勝利です！");
+				} else if(resultInt[0] == 3) {
+					labelPlay4.setText(resultInt[1] + "対" + resultInt[2] + "で、結果は引き分けです！");
+				}
+				panelPlay3.add(labelPlay4);
+				JLabel labelPlay5 = new JLabel();
+				labelPlay5.setText("ゲームを終了します");
+				panelPlay3.add(labelPlay5);
+				
+				JButton btnPlay2 = new JButton("タイトルに戻る");
+				btnPlay2.setActionCommand("toTitle");
+				btnPlay2.addActionListener(this);
+				panelPlay3.add(btnPlay2);
+			}
+		}
+		
+		framePlay.getContentPane().add(panelPlay3, BorderLayout.SOUTH);
+		
+		
+		if(inputableInt == 2) {
+			inputableInt = 0;
+			playGame();
+		}
+		framePlay.setVisible(true);
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		
+		cmd = e.getActionCommand();
+		
+		if(cmd.equals("2player")) {
+			frameTitle.dispose();
+			playMode = 1;
+			framePlay.setTitle("2人で対戦");
+			playGame();
+		} else if(cmd.equals("vsCpu")) {
+			frameTitle.dispose();
+			playMode = 2;
+			framePlay.setTitle("CPUと対戦");
+			playGame();
+		} else if(cmd.equals("toTitle")){
+			framePlay.dispose();
+			new Test("～オセロゲーム～");
+		}else {
+//			framePlay.dispose();
+			tableInt = process.updateTableByString(tableInt, turnCount, cmd);
+			turnCount++;
+			playGame();
+			
+		}
+	}
+	
+}

@@ -1,0 +1,66 @@
+
+〇構成図
+src
+|--frame
+|  |--MainFrame
+|  |--PlayPanel
+|  |--TitlePanel
+|  |--img
+|     |--othello_game
+|     |--othello_ishi_black
+|     |--othello_ishi_white
+|
+|--gameMaster
+|  |--GameMaster
+|
+|--main
+|  |--Main
+|
+|--frame
+|  |--mainFrame
+|  |--titleFrame
+|  |--playFrame
+|
+|--operation
+|  |--Calculate
+|  |--DataProcessing
+|
+|--tableValue
+|  |--TableInt
+
+〇実装したい機能
+　・定石を表示する機能
+　・アドベンチャーモード
+　　→このモードでは、CPUと対戦し、自分が使用した定石をコレクションできる
+　　→コレクションした定石は図鑑画面等で閲覧できる
+　　　→図鑑の表示は長くなりそうなため、スクロールペインが必要そう
+　・CPUの強さを設定する
+　　→swingのスピナーが使えそう
+済・CPU選択中に時間遅延をする機能
+　・フォントや色を整える
+　・一手戻る機能
+　　→2個以上戻れるようにするには、打った場所を記録する配列が必要
+
+
+Look&Feelの設定
+String lafClassName = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+//		String lafClassName = "javax.swing.plaf.metal.MetalLookAndFeel";
+//		String lafClassName = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
+//		String lafClassName = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+//		String lafClassName = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
+		try{
+			UIManager.setLookAndFeel(lafClassName);
+//			SwingUtilities.updateComponentTreeUI(this);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
+
+
+
+
+
+
+
+
+
